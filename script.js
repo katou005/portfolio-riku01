@@ -7,16 +7,11 @@ const typeSound = new Audio("./audio/typing-sound.mp3");
 const wrongSound = new Audio("./audio/wrong.mp3");
 const correctSound = new Audio("./audio/correct.mp3");
 
-/* inputテキスト入力。合っているかどうかの判定 */
 typeInputElement.addEventListener("input", () => {
-  /* タイプ音をつける */
   typeSound.play();
   typeSound.currentTime = 0;
 
-  /* 文字と文字を比較する */
-  /* ディスプレイに表示されてるSpanタグを取得 */
   const sentence = typeDisplayElement.querySelectorAll("span");
-  /* 自分で打ち込んだテキストを取得 */
   const arrayValue = typeInputElement.value.split("");
   let correct = true;
   sentence.forEach((characterSpan, index) => {
@@ -37,7 +32,6 @@ typeInputElement.addEventListener("input", () => {
     }
   });
 
-  /* 次の文章へ */
   if (correct) {
     correctSound.play();
     correctSound.currentTime = 0;
@@ -45,51 +39,39 @@ typeInputElement.addEventListener("input", () => {
   }
 });
 
-/* ちゃんとthenかawaitで待たないと欲しいデータが入らない。 */
-/* 非同期でランダムな文章を取得する */
 function GetRandomSentence() {
   return fetch(RANDOM_SENTENCE_URL_API)
     .then((response) => response.json())
     .then(
       (data) =>
-        /* ここでならちゃんと文章情報を取り扱うことができる。 */
-        //console.log(data.content);
         data.content
     );
 }
 
-/* 次のランダムな文章を取得する */
 async function RenderNextSentence() {
   const sentence = await GetRandomSentence();
   console.log(sentence);
 
-  /* ディスプレイに表示 */
-  typeDisplayElement.innerText = ""; //最初はsentenceが入ってた。
-  /* 文章を1文字ずつ分解して、spanタグを生成する(クラス付与のため) */
+  typeDisplayElement.innerText = "";
   sentence.split("").forEach((character) => {
     const characterSpan = document.createElement("span");
-    // characterSpan.classList.add("correct");
     characterSpan.innerText = character;
     typeDisplayElement.appendChild(characterSpan);
-    /* 確認 */
     console.log(characterSpan);
   });
-  /* テキストボックスの中身を消す。 */
   typeInputElement.value = null;
 
-  /* タイマーのリセット */
   StartTimer();
 }
 
 let startTime;
 let originTime = 30;
-/* カウントアップを開始する。 */
 function StartTimer() {
   timer.innerText = originTime;
-  startTime = new Date(); /* 現在の時刻を表示 */
+  startTime = new Date();
   console.log(startTime);
   setInterval(() => {
-    timer.innerText = originTime - getTimerTime(); /* １秒ずれて呼び出される */
+    timer.innerText = originTime - getTimerTime();
     if (timer.innerText <= 0) TimeUp();
   }, 1000);
 }
@@ -97,7 +79,7 @@ function StartTimer() {
 function getTimerTime() {
   return Math.floor(
     (new Date() - startTime) / 1000
-  ); /* 現在の時刻 - １秒前の時刻 = 1s*/
+  );
 }
 
 function TimeUp() {
